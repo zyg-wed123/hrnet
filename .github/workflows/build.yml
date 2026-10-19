@@ -8,14 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/kivy/buildozer:latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        with:
-          command: buildozer android debug
+      - name: Build APK with Buildozer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -y install --no-install-recommends zip unzip >/dev/null 2>&1 || true
+          buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
