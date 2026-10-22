@@ -6,7 +6,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,ttf,db
 source.include_patterns = ziti.ttf
 version = 1.0
-requirements = python3==3.12,kivy==2.3.1,openpyxl
+requirements = hostpython3==3.12,python3==3.12,kivy==2.3.1,openpyxl
 orientation = portrait
 fullscreen = 0
 android.permissions = READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE
