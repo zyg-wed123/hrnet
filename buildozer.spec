@@ -17,6 +17,11 @@ android.accept_sdk_license = True
 android.arch = armeabi-v7a,arm64-v8a
 android.add_src = ziti.ttf
 
+# 使用本地已修复 pip 自升级 bug 的 python-for-android (在 CI build.yml 中 clone+patch)
+p4a.source_dir = ./p4a
+p4a.branch = master
+p4a.commit = HEAD
+
 [buildozer]
 log_level = 2
 warn_on_root = 1
