@@ -24,11 +24,28 @@ jobs:
 
       - name: Install buildozer
         run: |
-          python -m pip install --upgrade pip
+          # Pin pip to 24.0: newer pip (26.x) breaks p4a's venv with
+          # "cannot import name 'open_rich_spinner'" (mixed pip files).
+          python -m pip install "pip==24.0"
           pip install --upgrade cython==0.29.36 buildozer
 
       - name: Build APK
         run: |
+          # p4a 的 venv 升级 pip 到最新(26.x)会因 open_rich_spinner 被移除而崩溃。
+          # 方案: clone 一份 python-for-android, patch 掉 pip 自升级(固定 pip==24.0),
+          # 提交为本地 commit, 并让 buildozer 通过 p4a.source_dir 使用这份已修复的 p4a。
+          if [ ! -d p4a ]; then
+            git clone --depth 1 --branch master https://github.com/kivy/python-for-android.git p4a
+          fi
+          cd p4a
+          # 修 build.py: run_pymodules_install 里的 "pip install -U pip" 改为固定 24.0
+          sed -i 's/source venv\/bin\/activate \&\& pip install -U pip/source venv\/bin\/activate \&\& pip install pip==24.0/' pythonforandroid/build.py
+          # 修 pythonpackage.py: get_package_as_folder 里的 "pip install -U pip wheel" 改为固定 24.0
+          sed -i 's/"install", "-U", "pip", "wheel"/"install", "pip==24.0", "wheel"/g' pythonforandroid/pythonpackage.py
+          sed -i 's/"install", "-U", "pip"/"install", "pip==24.0"/g' pythonforandroid/pythonpackage.py
+          # 把 patch 提交为本地 commit, 避免 buildozer 重置工作区
+          git -c user.email="ci@example.com" -c user.name="CI" commit -am "pin pip to 24.0 to fix open_rich_spinner" || echo "nothing to commit"
+          cd ..
           yes | buildozer -v android debug
 
       - name: Upload APK
