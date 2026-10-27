@@ -53,14 +53,14 @@ def get_db_path():
 DB_PATH = get_db_path()
 
 # ===== 全局缩放：让手机界面字体/控件/图片更大更清晰 =====
-# 以窗口较短的边为基准，目标短边约 360 逻辑像素时缩放 1.0，
-# 手机竖屏短边更小(<360)时进一步放大；叠加 1.2 倍基础放大让手机端明显更大
+# 以窗口较短的边为基准，短边约 340 逻辑像素时缩放 1.35，
+# 手机竖屏短边更小时进一步放大；1.35 基础放大让手机端明显更大、更易点击
 def _base_short():
     try:
         return min(Window.width, Window.height)
     except Exception:
-        return 360.0
-SCALE = max(1.2, (360.0 / _base_short()) * 1.2)
+        return 340.0
+SCALE = max(1.35, (340.0 / _base_short()) * 1.4)
 # 字号缩放（保留小数），控件高度/间距用整数
 def FS(px):   return px * SCALE          # 字号
 def D(px):    return int(px * SCALE)     # 尺寸/高度/间距
@@ -72,11 +72,11 @@ def white_popup(title, msg, size=(0.8,0.3)):
     with box.canvas.before:
         Color(1,1,1,1); r=Rectangle(pos=box.pos,size=box.size)
     box.bind(pos=lambda *a:setattr(r,'pos',box.pos),size=lambda *a:setattr(r,'size',box.size))
-    box.add_widget(Label(text=title,font_name="SimHei",font_size=FS(13),bold=True,color=(0,0,0,1),size_hint_y=0.25))
-    ml=Label(text=msg,font_name="SimSun",font_size=FS(11),color=(0.2,0.2,0.2,1),size_hint_y=0.55)
+    box.add_widget(Label(text=title,font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1),size_hint_y=0.25))
+    ml=Label(text=msg,font_name="SimSun",font_size=FS(14),color=(0.2,0.2,0.2,1),size_hint_y=0.55)
     ml.bind(size=lambda *a:setattr(ml,'text_size',(ml.width,None)))
     box.add_widget(ml)
-    b=Button(text="确定",font_name="SimSun",font_size=FS(12),size_hint_y=0.2)
+    b=Button(text="确定",font_name="SimSun",font_size=FS(15),size_hint_y=0.2)
     b.bind(on_press=lambda x:p.dismiss())
     box.add_widget(b)
     p.content=box; p.open()
@@ -163,14 +163,14 @@ class PositionChartWidget(Widget):
             Line(points=[x_right-10,axis_y+5,x_right,axis_y,x_right-10,axis_y-5],width=1.2)
             Line(points=[x_left,axis_y,x_left,h-15],width=1.2)
             Line(points=[x_left-5,h-25,x_left,h-15,x_left+5,h-25],width=1.2)
-        n=len(data); step=min(D(180),(x_right-x_left)/max(n-1,1))
+        n=len(data); step=min(D(200),(x_right-x_left)/max(n-1,1))
         for i,(y,mo,pos) in enumerate(data):
             nx=x_left+i*step
             with self.canvas:
                 Color(0.85,0.1,0.1,1)
-                Line(circle=(nx,dot_y,D(4)),width=1.5)
-            self.add_widget(Label(text=pos,pos=(nx-D(75),dot_y+D(12)),size=(D(150),D(24)),font_size=FS(14),bold=True,color=(0,0,0,1),font_name="SimHei",halign="center"))
-            self.add_widget(Label(text=f"{y}年{mo}月",pos=(nx-D(55),axis_y-D(28)),size=(D(110),D(20)),font_size=FS(13),color=(0,0,0,1),font_name="SimSun",halign="center"))
+                Line(circle=(nx,dot_y,D(6)),width=1.5)
+            self.add_widget(Label(text=pos,pos=(nx-D(75),dot_y+D(12)),size=(D(170),D(32)),font_size=FS(16),bold=True,color=(0,0,0,1),font_name="SimHei",halign="center"))
+            self.add_widget(Label(text=f"{y}年{mo}月",pos=(nx-D(55),axis_y-D(30)),size=(D(130),D(28)),font_size=FS(15),color=(0,0,0,1),font_name="SimSun",halign="center"))
 
 
 class RelationGraphWidget(Widget):
@@ -230,12 +230,12 @@ class RelationGraphWidget(Widget):
             if s in pc and t in pc and d.strip():
                 x1,y1=pc[s]; x2,y2=pc[t]
                 lx=(x1+x2)/2; ly=(y1+y2)/2
-                self.add_widget(Label(text=d,pos=(lx-D(35),ly-D(12)),size=(D(80),D(24)),font_size=FS(13),bold=True,color=(0.8,0,0,1),font_name="SimHei"))
+                self.add_widget(Label(text=d,pos=(lx-D(35),ly-D(15)),size=(D(130),D(30)),font_size=FS(15),bold=True,color=(0.8,0,0,1),font_name="SimHei"))
         # 人名圆节点
         for name,(x,y) in pc.items():
             with self.canvas:
-                Color(0.9,0.95,1,1); Line(circle=(x,y,D(22)),width=1.2)
-            self.add_widget(Label(text=name,pos=(x-D(45),y-D(13)),size=(D(90),D(26)),font_size=FS(13),bold=True,color=(0,0,0,1),font_name="SimHei"))
+                Color(0.9,0.95,1,1); Line(circle=(x,y,D(32)),width=1.2)
+            self.add_widget(Label(text=name,pos=(x-D(65),y-D(16)),size=(D(130),D(32)),font_size=FS(15),bold=True,color=(0,0,0,1),font_name="SimHei"))
 
 
 class DirBrowserPopup(Popup):
@@ -243,35 +243,35 @@ class DirBrowserPopup(Popup):
     def __init__(self,start_path,on_select,is_file_mode=False,**kwargs):
         super().__init__(**kwargs)
         self.title=""; self.separator_height=0; self.background=''
-        self.size_hint=(0.9,0.7); self.on_select=on_select
+        self.size_hint=(0.95,0.85); self.on_select=on_select
         self.is_file_mode=is_file_mode
         self.selected_file=None
         self.cur=start_path if os.path.isdir(start_path) else os.path.expanduser("~")
-        root=BoxLayout(orientation="vertical",padding=D(8),spacing=D(4))
+        root=BoxLayout(orientation="vertical",padding=D(10),spacing=D(5))
         with root.canvas.before:
             Color(1,1,1,1); self._bg=Rectangle(pos=root.pos,size=root.size)
         root.bind(pos=lambda *a:setattr(self._bg,'pos',root.pos),size=lambda *a:setattr(self._bg,'size',root.size))
         # 顶部路径行
-        top=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(30),spacing=D(4))
-        up=Button(text="上级",font_name="SimSun",font_size=FS(11),size_hint_x=0.15); up.bind(on_press=self._go_up)
-        self.path_lbl=Label(text=self.cur,font_name="SimSun",font_size=FS(10),color=(0,0,0,1),size_hint_x=0.7,halign="left",valign="middle")
+        top=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(5))
+        up=Button(text="上级",font_name="SimSun",font_size=FS(14),size_hint_x=0.15); up.bind(on_press=self._go_up)
+        self.path_lbl=Label(text=self.cur,font_name="SimSun",font_size=FS(13),color=(0,0,0,1),size_hint_x=0.7,halign="left",valign="middle")
         self.path_lbl.bind(size=lambda *a:setattr(self.path_lbl,'text_size',self.path_lbl.size))
         top.add_widget(up); top.add_widget(self.path_lbl)
         root.add_widget(top)
         # 列表
         self.sv=ScrollView()
-        self.list_box=GridLayout(cols=1,spacing=D(2),size_hint_y=None)
+        self.list_box=GridLayout(cols=1,spacing=D(3),size_hint_y=None)
         self.list_box.bind(minimum_height=self.list_box.setter("height"))
         self.sv.add_widget(self.list_box)
         root.add_widget(self.sv)
         # 底部按钮
-        bot=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(36),spacing=D(6))
+        bot=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(54),spacing=D(8))
         ok_text="选择此文件夹" if not is_file_mode else "取消"
-        self.ok_btn=Button(text=ok_text,font_name="SimSun",font_size=FS(12))
+        self.ok_btn=Button(text=ok_text,font_name="SimSun",font_size=FS(15))
         if is_file_mode:
             self.ok_btn.disabled=True
         self.ok_btn.bind(on_press=self._choose)
-        cancel=Button(text="取消",font_name="SimSun",font_size=FS(12)); cancel.bind(on_press=self.dismiss)
+        cancel=Button(text="取消",font_name="SimSun",font_size=FS(15)); cancel.bind(on_press=self.dismiss)
         bot.add_widget(self.ok_btn); bot.add_widget(cancel)
         root.add_widget(bot)
         self.content=root
@@ -286,12 +286,12 @@ class DirBrowserPopup(Popup):
             files=sorted([f for f in os.listdir(self.cur) if os.path.isfile(os.path.join(self.cur,f)) and f.lower().endswith((".xlsx",".xls"))])
         except: dirs=[]; files=[]
         for d in dirs:
-            b=Button(text="📁 "+d,font_name="SimSun",font_size=FS(11),size_hint_y=None,height=D(32))
+            b=Button(text="📁 "+d,font_name="SimSun",font_size=FS(14),size_hint_y=None,height=D(48))
             path=os.path.join(self.cur,d)
             b.bind(on_press=lambda x,p=path:self._enter(p))
             self.list_box.add_widget(b)
         for f in files:
-            b=Button(text="📄 "+f,font_name="SimSun",font_size=FS(11),size_hint_y=None,height=D(32),background_color=(0.9,0.95,1,1))
+            b=Button(text="📄 "+f,font_name="SimSun",font_size=FS(14),size_hint_y=None,height=D(48),background_color=(0.9,0.95,1,1))
             path=os.path.join(self.cur,f)
             b.bind(on_press=lambda x,p=path,n=f:self._pick_file(p,n))
             self.list_box.add_widget(b)
@@ -316,31 +316,31 @@ class FileDialogPopup(Popup):
     def __init__(self,title_text,default_dir,default_name,on_confirm,is_export=True,**kwargs):
         super().__init__(**kwargs)
         self.title=""; self.separator_height=0; self.background=''
-        self.size_hint=(0.92,None); self.height=D(240)
+        self.size_hint=(0.92,None); self.height=D(380)
         self.on_confirm=on_confirm; self.is_export=is_export
-        layout=BoxLayout(orientation="vertical",padding=D(10),spacing=D(6))
+        layout=BoxLayout(orientation="vertical",padding=D(12),spacing=D(8))
         with layout.canvas.before:
             Color(1,1,1,1); self._bg=Rectangle(pos=layout.pos,size=layout.size)
         layout.bind(pos=lambda *a:setattr(self._bg,'pos',layout.pos),size=lambda *a:setattr(self._bg,'size',layout.size))
-        layout.add_widget(Label(text=title_text,font_name="SimHei",font_size=FS(14),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(24)))
+        layout.add_widget(Label(text=title_text,font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(34)))
         # 文件夹行
-        r1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(30),spacing=D(4))
-        r1.add_widget(Label(text="文件夹:",font_name="SimSun",font_size=FS(11),size_hint_x=0.13,color=(0,0,0,1)))
-        self.dir_in=TextInput(text=default_dir,font_name="SimSun",font_size=FS(11),size_hint_x=0.67,multiline=False)
+        r1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(48),spacing=D(6))
+        r1.add_widget(Label(text="文件夹:",font_name="SimSun",font_size=FS(14),size_hint_x=0.13,color=(0,0,0,1)))
+        self.dir_in=TextInput(text=default_dir,font_name="SimSun",font_size=FS(14),size_hint_x=0.67,multiline=False)
         r1.add_widget(self.dir_in)
-        bb=Button(text="浏览",font_name="SimSun",font_size=FS(11),size_hint_x=0.20); bb.bind(on_press=self._browse)
+        bb=Button(text="浏览",font_name="SimSun",font_size=FS(14),size_hint_x=0.20); bb.bind(on_press=self._browse)
         r1.add_widget(bb)
         layout.add_widget(r1)
         # 文件名行
-        r2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(30),spacing=D(4))
-        r2.add_widget(Label(text="文件名:",font_name="SimSun",font_size=FS(11),size_hint_x=0.13,color=(0,0,0,1)))
-        self.name_in=TextInput(text=default_name,font_name="SimSun",font_size=FS(11),size_hint_x=0.87,multiline=False)
+        r2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(48),spacing=D(6))
+        r2.add_widget(Label(text="文件名:",font_name="SimSun",font_size=FS(14),size_hint_x=0.13,color=(0,0,0,1)))
+        self.name_in=TextInput(text=default_name,font_name="SimSun",font_size=FS(14),size_hint_x=0.87,multiline=False)
         r2.add_widget(self.name_in)
         layout.add_widget(r2)
         # 按钮
-        btn=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(36),spacing=D(8))
-        bok=Button(text="确定",font_name="SimSun",font_size=FS(13)); bok.bind(on_press=self._ok)
-        bcancel=Button(text="取消",font_name="SimSun",font_size=FS(13)); bcancel.bind(on_press=self.dismiss)
+        btn=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(54),spacing=D(10))
+        bok=Button(text="确定",font_name="SimSun",font_size=FS(16)); bok.bind(on_press=self._ok)
+        bcancel=Button(text="取消",font_name="SimSun",font_size=FS(16)); bcancel.bind(on_press=self.dismiss)
         btn.add_widget(bok); btn.add_widget(bcancel)
         layout.add_widget(btn)
         self.content=layout
@@ -361,36 +361,36 @@ class EditPersonPopup(Popup):
     def __init__(self,pid,screen_ref,**kwargs):
         super().__init__(**kwargs)
         self.pid=pid; self.screen_ref=screen_ref
-        self.title=""; self.size_hint=(0.92,None); self.height=D(320)
+        self.title=""; self.size_hint=(0.95,None); self.height=D(500)
         self.separator_height=0
         self.background=''
-        layout=BoxLayout(orientation="vertical",padding=[D(6),0,D(6),D(6)],spacing=D(3))
+        layout=BoxLayout(orientation="vertical",padding=[D(8),0,D(8),D(8)],spacing=D(4))
         with layout.canvas.before:
             Color(1,1,1,1); self._popbg=Rectangle(pos=layout.pos,size=layout.size)
         layout.bind(pos=lambda *a:setattr(self._popbg,'pos',layout.pos),size=lambda *a:setattr(self._popbg,'size',layout.size))
-        def pt(lbl,sx=0.12,fs=12):
+        def pt(lbl,sx=0.12,fs=15):
             return Label(text=lbl,size_hint_x=sx,font_name="SimSun",font_size=FS(fs),halign="left",color=(0,0,0,1))
-        def ti(fs=12,hint="",sx=1.0):
-            return TextInput(font_name="SimSun",font_size=FS(fs),height=D(26),hint_text=hint,size_hint_x=sx,multiline=False)
+        def ti(fs=15,hint="",sx=1.0):
+            return TextInput(font_name="SimSun",font_size=FS(fs),height=D(42),hint_text=hint,size_hint_x=sx,multiline=False)
         # 六行结构：姓名/年月/职位+日期/关系1/关系2/关系3
-        r1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r1.add_widget(pt("姓名",0.10)); self.name_in=ti(); r1.add_widget(self.name_in)
-        r2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r2.add_widget(pt("年月",0.10)); self.birth_in=ti(); r2.add_widget(self.birth_in)
-        r3=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r3=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r3.add_widget(pt("职位",0.08)); self.pos_in=ti(sx=0.42); r3.add_widget(self.pos_in)
         r3.add_widget(pt("日期",0.07)); self.pos_date_in=ti(hint="日期",sx=0.43); r3.add_widget(self.pos_date_in)
-        r4=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r4=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r4.add_widget(pt("关系1",0.10))
         self._e_r1n=ti(hint="姓名",sx=0.30); r4.add_widget(self._e_r1n)
         self._e_r1p=ti(hint="职位",sx=0.30); r4.add_widget(self._e_r1p)
         self._e_r1d=ti(hint="关系",sx=0.30); r4.add_widget(self._e_r1d)
-        r5=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r5=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r5.add_widget(pt("关系2",0.10))
         self._e_r2n=ti(hint="姓名",sx=0.30); r5.add_widget(self._e_r2n)
         self._e_r2p=ti(hint="职位",sx=0.30); r5.add_widget(self._e_r2p)
         self._e_r2d=ti(hint="关系",sx=0.30); r5.add_widget(self._e_r2d)
-        r6=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(28),spacing=D(2))
+        r6=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(46),spacing=D(3))
         r6.add_widget(pt("关系3",0.10))
         self._e_r3n=ti(hint="姓名",sx=0.30); r6.add_widget(self._e_r3n)
         self._e_r3p=ti(hint="职位",sx=0.30); r6.add_widget(self._e_r3p)
@@ -399,9 +399,9 @@ class EditPersonPopup(Popup):
         self.r_in=[(self._e_r1n,self._e_r1p,self._e_r1d),
                    (self._e_r2n,self._e_r2p,self._e_r2d),
                    (self._e_r3n,self._e_r3p,self._e_r3d)]
-        bb=BoxLayout(size_hint_y=None,height=D(36),spacing=D(8),padding=[0,D(6),0,0])
-        bs=Button(text="保存修改",font_name="SimSun",font_size=FS(13)); bs.bind(on_press=self.save_edit)
-        bc=Button(text="取消",font_name="SimSun",font_size=FS(13)); bc.bind(on_press=self.dismiss)
+        bb=BoxLayout(size_hint_y=None,height=D(56),spacing=D(10),padding=[0,D(8),0,0])
+        bs=Button(text="保存修改",font_name="SimSun",font_size=FS(16)); bs.bind(on_press=self.save_edit)
+        bc=Button(text="取消",font_name="SimSun",font_size=FS(16)); bc.bind(on_press=self.dismiss)
         bb.add_widget(bs); bb.add_widget(bc); layout.add_widget(bb)
         self.content=layout; self.load()
     def load(self):
@@ -434,16 +434,16 @@ class EditPersonPopup(Popup):
 class PersonRow(BoxLayout):
     _COLS=(0.4,0.55,0.55,1.3,1.35,1.35,1.35)
     def __init__(self,data,on_click,**kwargs):
-        super().__init__(orientation="horizontal",size_hint_y=None,height=D(28),spacing=1,**kwargs)
+        super().__init__(orientation="horizontal",size_hint_y=None,height=D(50),spacing=1,**kwargs)
         self.pid=data["id"]; self.on_click=on_click; self._selected=False
         with self.canvas.before:
             self._col=Color(1,1,1,1); self._bg=Rectangle(pos=self.pos,size=self.size)
         self.bind(pos=lambda *a:setattr(self._bg,'pos',self.pos),size=lambda *a:setattr(self._bg,'size',self.size))
         def cell(txt,bold=False,sx=1.0):
-            return Label(text=str(txt),size_hint_x=sx,font_name="SimSun",font_size=FS(11),bold=bold,color=(0,0,0,1))
+            return Label(text=str(txt),size_hint_x=sx,font_name="SimSun",font_size=FS(14),bold=bold,color=(0,0,0,1))
         def relc(n,p,d,sx=1.0):
             txt = "|".join([x for x in [str(n),str(p),str(d)] if x])
-            return Label(text=txt,size_hint_x=sx,font_name="SimSun",font_size=FS(9),color=(0,0,0,1),halign="center")
+            return Label(text=txt,size_hint_x=sx,font_name="SimSun",font_size=FS(13),color=(0,0,0,1),halign="center")
         self.add_widget(cell(data["id"],bold=True,sx=self._COLS[0]))
         self.add_widget(cell(data["name"],sx=self._COLS[1]))
         self.add_widget(cell(data["birth"],sx=self._COLS[2]))
@@ -469,14 +469,14 @@ class MainScreen(Screen):
             Color(1,1,1,1); self._r=Rectangle(size=root.size,pos=root.pos)
         root.bind(size=lambda i,v:setattr(self._r,'size',i.size),pos=lambda i,v:setattr(self._r,'pos',i.pos))
 
-        top_panel=BoxLayout(orientation="vertical",size_hint_y=0.55,spacing=D(6),padding=[0,D(16),0,0])
-        mid_panel=BoxLayout(orientation="vertical",size_hint_y=0.25,spacing=D(2))
-        bot_panel=BoxLayout(orientation="vertical",size_hint_y=0.20,spacing=D(2))
+        top_panel=BoxLayout(orientation="vertical",size_hint_y=0.64,spacing=D(6),padding=[0,D(16),0,0])
+        mid_panel=BoxLayout(orientation="vertical",size_hint_y=0.19,spacing=D(2))
+        bot_panel=BoxLayout(orientation="vertical",size_hint_y=0.17,spacing=D(2))
 
         # ===== 表单区：3行，左半 姓名/年月/职位，右半 关系1/2/3 =====
-        form=BoxLayout(orientation="vertical",size_hint_y=None,height=D(150),spacing=D(2),padding=[D(4),D(20),D(4),0])
-        def mk_ti(fs=12,hint=""):
-            return TextInput(font_name="SimSun",font_size=FS(fs),height=D(40),hint_text=hint,size_hint_x=1)
+        form=BoxLayout(orientation="vertical",size_hint_y=None,height=D(202),spacing=D(2),padding=[D(4),D(10),D(4),0])
+        def mk_ti(fs=14,hint=""):
+            return TextInput(font_name="SimSun",font_size=FS(fs),height=D(42),hint_text=hint,size_hint_x=1)
 
         self.name_in=mk_ti(); self.birth_in=mk_ti(); self.pos_in=mk_ti()
         self.pos_date_in=mk_ti(hint="日期")
@@ -487,27 +487,27 @@ class MainScreen(Screen):
         # 左半：标签统一宽 0.18，输入框统一占剩余
         def left_cell(lbl_text, inp):
             h=BoxLayout(orientation="horizontal",size_hint_x=0.45,spacing=D(2))
-            h.add_widget(Label(text=lbl_text,size_hint_x=0.22,font_name="SimSun",font_size=FS(13),halign="right",color=(0,0,0,1)))
+            h.add_widget(Label(text=lbl_text,size_hint_x=0.22,font_name="SimSun",font_size=FS(15),halign="right",color=(0,0,0,1)))
             inp.size_hint_x=0.78; h.add_widget(inp)
             return h
         # 右半：关系标签 + 3个带提示的输入框
         def right_cell(lbl_text, n_w, p_w, d_w):
             h=BoxLayout(orientation="horizontal",size_hint_x=0.55,spacing=D(1))
-            h.add_widget(Label(text=lbl_text,size_hint_x=0.15,font_name="SimSun",font_size=FS(12),halign="right",color=(0,0,0,1)))
+            h.add_widget(Label(text=lbl_text,size_hint_x=0.15,font_name="SimSun",font_size=FS(14),halign="right",color=(0,0,0,1)))
             n_w.size_hint_x=0.28; p_w.size_hint_x=0.28; d_w.size_hint_x=0.29
             h.add_widget(n_w); h.add_widget(p_w); h.add_widget(d_w)
             return h
 
-        row1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(38),spacing=D(2))
+        row1=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(44),spacing=D(2))
         row1.add_widget(left_cell("姓名",self.name_in))
         row1.add_widget(right_cell("关系1",self.r1n,self.r1p,self.r1d))
-        row2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(38),spacing=D(2))
+        row2=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(44),spacing=D(2))
         row2.add_widget(left_cell("年月",self.birth_in))
         row2.add_widget(right_cell("关系2",self.r2n,self.r2p,self.r2d))
-        row3=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(38),spacing=D(2))
+        row3=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(44),spacing=D(2))
         # 职位行左半：职位标签+职位输入+日期输入，和上面两行对齐
         left3=BoxLayout(orientation="horizontal",size_hint_x=0.45,spacing=D(2))
-        left3.add_widget(Label(text="职位",size_hint_x=0.22,font_name="SimSun",font_size=FS(13),halign="right",color=(0,0,0,1)))
+        left3.add_widget(Label(text="职位",size_hint_x=0.22,font_name="SimSun",font_size=FS(15),halign="right",color=(0,0,0,1)))
         self.pos_in.size_hint_x=0.42; left3.add_widget(self.pos_in)
         self.pos_date_in.size_hint_x=0.36; left3.add_widget(self.pos_date_in)
         row3.add_widget(left3)
@@ -515,9 +515,9 @@ class MainScreen(Screen):
         for w in [row1,row2,row3]: form.add_widget(w)
 
         # 按钮行
-        bb=BoxLayout(orientation="horizontal",spacing=D(2),size_hint_y=None,height=D(42))
+        bb=BoxLayout(orientation="horizontal",spacing=D(2),size_hint_y=None,height=D(50))
         def ab(t,f):
-            b=Button(text=t,font_name="SimSun",font_size=FS(14)); b.bind(on_press=f); bb.add_widget(b)
+            b=Button(text=t,font_name="SimSun",font_size=FS(16)); b.bind(on_press=f); bb.add_widget(b)
         ab("新增",self.do_save); ab("查询",self.do_query); ab("编辑",self.do_edit)
         ab("删除",self.do_delete); ab("导出",self.do_export); ab("导入",self.do_import)
         form.add_widget(bb)
@@ -525,14 +525,14 @@ class MainScreen(Screen):
 
         # ===== 列表区：全宽 =====
         list_panel=BoxLayout(orientation="vertical",spacing=0)
-        list_panel.add_widget(Label(text="人员列表",font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(30)))
-        hdr=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(36),spacing=1)
+        list_panel.add_widget(Label(text="人员列表",font_name="SimHei",font_size=FS(18),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(34)))
+        hdr=BoxLayout(orientation="horizontal",size_hint_y=None,height=D(44),spacing=1)
         with hdr.canvas.before:
             Color(0.9,0.9,0.9,1); self._hbg=Rectangle(pos=hdr.pos,size=hdr.size)
         hdr.bind(pos=lambda *a:setattr(self._hbg,'pos',hdr.pos),size=lambda *a:setattr(self._hbg,'size',hdr.size))
         C=(0.4,0.55,0.55,1.3,1.35,1.35,1.35)
         def hcell(txt,sx):
-            return Label(text=txt,size_hint_x=sx,font_name="SimHei",font_size=FS(15),bold=True,color=(0,0,0,1))
+            return Label(text=txt,size_hint_x=sx,font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1))
         hdr.add_widget(hcell("ID",C[0])); hdr.add_widget(hcell("姓名",C[1]))
         hdr.add_widget(hcell("年月",C[2])); hdr.add_widget(hcell("职位",C[3]))
         hdr.add_widget(hcell("关系1",C[4])); hdr.add_widget(hcell("关系2",C[5]))
@@ -546,13 +546,13 @@ class MainScreen(Screen):
         root.add_widget(top_panel)
 
         # ===== 关系网 =====
-        mid_panel.add_widget(Label(text="关系网",font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(26)))
+        mid_panel.add_widget(Label(text="关系网",font_name="SimHei",font_size=FS(18),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(30)))
         self.graph_box=BoxLayout(size_hint_y=0.95)
         mid_panel.add_widget(self.graph_box)
         root.add_widget(mid_panel)
 
         # ===== 职位变迁 =====
-        bot_panel.add_widget(Label(text="职位变迁",font_name="SimHei",font_size=FS(16),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(26)))
+        bot_panel.add_widget(Label(text="职位变迁",font_name="SimHei",font_size=FS(18),bold=True,color=(0,0,0,1),size_hint_y=None,height=D(30)))
         self.chart_box=BoxLayout(size_hint_y=0.95)
         bot_panel.add_widget(self.chart_box)
         root.add_widget(bot_panel)
